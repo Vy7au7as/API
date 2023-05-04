@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube Search Suggestion Keywords Page</title>
+</head>
+<body>
+<div class="menu-bar">
+    <h1>YouTube Search Suggestions:</h1></dr></div>
+    <div class="search-container">
+    <form method="get" action="/">
+        <input type="text" name="q" placeholder="Enter your search query" value="{{ query }}" class="search-bar" id="search-bar" placeholder>
+        <button type="submit" class="search-button" id="search-button">Search</button>
+        </form><form action="/numbers">
+        <button type="submit" class="show-button" style="color:white">Show Details</button>
+       </form><a style="margin-left:10px; color:black" href="{% url 'download_csv' %}" class="btn btn-primary">Download as CSV</a>
+
+
+    </div>
+    {% if suggestions %}
+    <h2>Suggestion keywords:</h2>
+
+    <ul style="list-style-type: decimal">
+        {% for suggestion in suggestions %}
+        <li>{{ suggestion }}</li>
+        {% endfor %}
+    </ul>
+
+    {% endif %}
+
+</body>
+<style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            background-color: #f1f1f1;
+        }
+
+        .search-bar {
+            padding: 6px;
+            font-size: 17px;
+            border: none;
+        }
+
+        .search-button {
+            padding: 6px 10px;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+            background-color: #ddd;
+        }
+
+        .search-button:hover {
+            background-color: #ccc;
+        }
+
+        /* new styles for menu bar */
+        .menu-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+            background-color: #333;
+            color: #fff;
+            padding: 0 20px;
+        }
+
+        .menu-button {
+            padding: 6px 10px;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+            background-color: transparent;
+            color: #fff;
+        }
+
+        .menu-button:hover {
+            background-color: #444;
+        }
+		.show-button {
+			padding: 6px 10px;
+			font-size: 17px;
+			border: none;
+			cursor: pointer;
+			background-color: black;
+			margin-left: 10px;
+}
+
+		.show-button:hover {
+			background-color: #ccc;
+}
+
+    </style>
+</html>
