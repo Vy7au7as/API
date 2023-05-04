@@ -47,7 +47,8 @@ def search(request):
         'query': query,
         'suggestions': list(set(suggestions)),
     }
-    return render(request, 'youtube.html', context)
+    return render(request, 'youtube.html', {'query': query, 'suggestions': suggestions})
+
 
 #Download_CSV
 
