@@ -5,6 +5,7 @@ import csv
 import io
 from django.http import HttpResponse
 
+kintamasis = []
 def search(request):
     query = request.GET.get('q', '')
     suggestions = []
@@ -46,32 +47,31 @@ def search(request):
     context = {
         'query': query,
         'suggestions': list(set(suggestions)),
+
     }
+    global kintamasis
+    kintamasis = list(set(suggestions))
     return render(request, 'youtube.html', {'query': query, 'suggestions': suggestions})
 
 
 #Download_CSV
 
+
 def download_csv(request):
-    query = request.GET.get('q')
-    if not query:
-        return HttpResponse("No query parameter provided.")
-        # Make API call and get suggestions
-        suggestions = search(query)
+    print(kintamasis)
+    results = kintamasis  # assuming kintamasis() returns a list of strings
 
-        # Set up response as CSV file
+    # Set up response as CSV file
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="kintamasis_results.csv"'
 
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="suggestions.csv"'
+    # Write data to CSV file
+    writer = csv.writer(response)
+    writer.writerow(['Results'])
+    for result in results:
+        writer.writerow([result])
 
-        # Write data to CSV file
-        writer = csv.writer(response)
-        writer.writerow(['Suggestions'])
-        for suggestion in suggestions:
-            writer.writerow([suggestion])
-
-        return response
-
+    return response
 
 
 
