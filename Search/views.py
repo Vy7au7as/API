@@ -6,6 +6,7 @@ import io
 from django.http import HttpResponse
 
 kintamasis = []
+kintamasis2 = []
 def search(request):
     query = request.GET.get('q', '')
     suggestions = []
@@ -51,6 +52,7 @@ def search(request):
     }
     global kintamasis
     kintamasis = list(set(suggestions))
+    print(kintamasis)
     return render(request, 'youtube.html', {'query': query, 'suggestions': suggestions})
 
 
@@ -58,12 +60,12 @@ def search(request):
 
 
 def download_csv(request):
-    print(kintamasis)
+    #print(kintamasis)
     results = kintamasis  # assuming kintamasis() returns a list of strings
 
     # Set up response as CSV file
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="kintamasis_results.csv"'
+    response['Content-Disposition'] = 'attachment; filename="results.csv"'
 
     # Write data to CSV file
     writer = csv.writer(response)
@@ -72,6 +74,50 @@ def download_csv(request):
         writer.writerow([result])
 
     return response
+#VidIQ
+import requests
+from django.shortcuts import render
+from django.http import HttpResponse
+
+
+def details(request):
+    print("kintamasis:", kintamasis)
+    terms = []
+    suggestions = list(set(kintamasis))
+    results = []
+
+
+    for term in suggestions:
+        if ' ' in term:
+            term = term.replace(" ", "+")
+        url = f"https://api.vidiq.com/xwords/keyword_search/?term={term}&part=questions&limit=300"
+        auth = {'authorization': 'Bearer UKP!e728d052-d362-4d96-b5c2-fe3d8c60e002!8dc5e271-13d7-419e-aaa6-7a0c3b25b3e7'}
+        response = requests.get(url, headers=auth)
+        data = response.json()
+        print(data)
+
+        for item in data.get('results', []):
+            result = {
+                'term': term,
+                'question': item.get('phrase', ''),
+                'score': item.get('score', 0),
+                'difficulty': item.get('difficulty', 0),
+                'volume': item.get('search_volume', {}).get('value', 0),
+                'competition': item.get('competition', {}),
+            }
+            results.append(result.copy())
+
+        print(results)
+    context = {
+        'results': results,
+    }
+
+    return render(request, 'youtube.html', context)
+
+
+
+
+
 
 
 

@@ -11,10 +11,19 @@
     <form method="get" action="/">
         <input type="text" name="q" placeholder="Enter your search query" value="{{ query }}" class="search-bar" id="search-bar" placeholder>
         <button type="submit" class="search-button" id="search-button">Search</button>
-        </form><form action="/numbers">
+        </form><form action="/details">
         <button type="submit" class="show-button" style="color:white">Show Details</button>
        </form><a style="margin-left:10px; color:black" href="{% url 'download_csv' %}" class="btn btn-primary">Download as CSV</a>
+{% if details %}
+<h2>Details:</h2>
 
+<ul style="list-style-type: decimal">
+    {% for detail in details %}
+    <li>{{ detail }}</li>
+    {% endfor %}
+</ul>
+
+{% endif %}
 
     </div>
     {% if suggestions %}
