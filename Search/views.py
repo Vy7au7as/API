@@ -2,11 +2,10 @@ from django.shortcuts import render
 import requests
 import json
 import csv
-import io
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 kintamasis = []
-kintamasis2 = []
+resultatai = []
 def search(request):
     query = request.GET.get('q', '')
     suggestions = []
@@ -52,7 +51,7 @@ def search(request):
     }
     global kintamasis
     kintamasis = list(set(suggestions))
-    print(kintamasis)
+    # print(kintamasis)
     return render(request, 'youtube.html', {'query': query, 'suggestions': suggestions})
 
 
@@ -61,7 +60,7 @@ def search(request):
 
 def download_csv(request):
     #print(kintamasis)
-    results = kintamasis  # assuming kintamasis() returns a list of strings
+    results = kintamasis
 
     # Set up response as CSV file
     response = HttpResponse(content_type='text/csv')
@@ -69,23 +68,60 @@ def download_csv(request):
 
     # Write data to CSV file
     writer = csv.writer(response)
-    writer.writerow(['Results'])
+    writer.writerow(['Results','Volume','Competition','Overall'])
     for result in results:
         writer.writerow([result])
 
     return response
 #VidIQ
-import requests
-from django.shortcuts import render
-from django.http import HttpResponse
+
 
 
 def details(request):
-    print("kintamasis:", kintamasis)
-    terms = []
-    suggestions = list(set(kintamasis))
-    results = []
+   terms = []
+   suggestions = list(set(kintamasis))
+   suggestions = ['keyword']
+   resultatai = []
 
+
+   for term in suggestions:
+       if ' ' in term:
+           term = term.replace(" ", "+")
+       url = f"https://api.vidiq.com/xwords/keyword_search/?term={term}&part=questions&limit=300"
+       auth = {'authorization': 'Bearer UKP!e728d052-d362-4d96-b5c2-fe3d8c60e002!8dc5e271-13d7-419e-aaa6-7a0c3b25b3e7'}
+       response = requests.get(url, headers=auth)
+       data = json.loads(response.content)
+       # print(data)
+       #print(url)
+       for item in data.get('resultatai', []):
+           result = {
+               'term': term,
+               'estimated_monthly_search': item.get('estimated_monthly_search', ''),
+               'score': item.get('score', 0),
+               'difficulty': item.get('difficulty', {}).get('value', 0),
+               'volume': item.get('search_volume', {}).get('value', 0),
+               'competition': item.get('competition', {}).get('value', 0),
+           }
+           resultatai.append(result)
+           # print(resultatai)
+   # Add resultatai to the context dictionary
+   context = {
+       'suggestions': suggestions,
+       'details': details,
+   }
+   context['resultatai'] = resultatai
+
+   return render(request, 'youtube.html', context)
+
+
+
+
+
+def get_keyword_data(request):
+    suggestions = list(set(kintamasis))
+    # print(suggestions)
+    # suggestions = ['keyword']
+    resultatai = []
 
     for term in suggestions:
         if ' ' in term:
@@ -93,35 +129,27 @@ def details(request):
         url = f"https://api.vidiq.com/xwords/keyword_search/?term={term}&part=questions&limit=300"
         auth = {'authorization': 'Bearer UKP!e728d052-d362-4d96-b5c2-fe3d8c60e002!8dc5e271-13d7-419e-aaa6-7a0c3b25b3e7'}
         response = requests.get(url, headers=auth)
-        data = response.json()
+        data = json.loads(response.text)
         print(data)
+        competition = round(data['normalized_input_term']['competition'])
+        volume = round(data['normalized_input_term']['volume'])
+        overall = round(data['normalized_input_term']['overall'])
+        estimated_monthly_search = round(data['normalized_input_term']['estimated_monthly_search'])
+        sarasas = {
+            'term':term,
+            'competition': competition,
+            'volume': volume,
+            'overall': overall,
+            'estimated_monthly_search': estimated_monthly_search,
+        }
+        resultatai.append(sarasas)
 
-        for item in data.get('results', []):
-            result = {
-                'term': term,
-                'question': item.get('phrase', ''),
-                'score': item.get('score', 0),
-                'difficulty': item.get('difficulty', 0),
-                'volume': item.get('search_volume', {}).get('value', 0),
-                'competition': item.get('competition', {}),
-            }
-            results.append(result.copy())
-
-        print(results)
     context = {
-        'results': results,
+
+        'resultatai':resultatai,
     }
 
-    return render(request, 'youtube.html', context)
-
-
-
-
-
-
-
-
-
+    return render(request, 'youtube.html', context=context)
 
 
 
