@@ -78,78 +78,90 @@ def download_csv(request):
 
 
 def details(request):
-   terms = []
-   suggestions = list(set(kintamasis))
-   suggestions = ['keyword']
-   resultatai = []
+        suggestions = list(set(kintamasis))
+        # suggestions = ['keyword are good']
+        resultatai = []
+
+        for term in suggestions:
+            if ' ' in term:
+                term = term.replace(" ", "+")
+            url = f"https://api.vidiq.com/xwords/keyword_search/?term={term}&part=questions&limit=300"
+            auth = {
+                'authorization': 'Bearer UKP!e728d052-d362-4d96-b5c2-fe3d8c60e002!8dc5e271-13d7-419e-aaa6-7a0c3b25b3e7'}
+            response = requests.get(url, headers=auth)
+            data = json.loads(response.text)
+            print(data)
+            competition = round(data['normalized_input_term']['competition'])
+            volume = round(data['normalized_input_term']['volume'])
+            overall = round(data['normalized_input_term']['overall'])
+            estimated_monthly_search = round(data['normalized_input_term']['estimated_monthly_search'])
+
+            # Replace "+" symbol with a space in the term
+            term = term.replace("+", " ")
+
+            sarasas = {
+                'term': term,
+                'competition': competition,
+                'volume': volume,
+                'overall': overall,
+                'estimated_monthly_search': estimated_monthly_search,
+            }
+            resultatai.append(sarasas)
+
+        context = {
+            'resultatai': resultatai,
+        }
+
+        return render(request, 'youtube.html', context=context)
 
 
-   for term in suggestions:
-       if ' ' in term:
-           term = term.replace(" ", "+")
-       url = f"https://api.vidiq.com/xwords/keyword_search/?term={term}&part=questions&limit=300"
-       auth = {'authorization': 'Bearer UKP!e728d052-d362-4d96-b5c2-fe3d8c60e002!8dc5e271-13d7-419e-aaa6-7a0c3b25b3e7'}
-       response = requests.get(url, headers=auth)
-       data = json.loads(response.content)
-       # print(data)
-       #print(url)
-       for item in data.get('resultatai', []):
-           result = {
-               'term': term,
-               'estimated_monthly_search': item.get('estimated_monthly_search', ''),
-               'score': item.get('score', 0),
-               'difficulty': item.get('difficulty', {}).get('value', 0),
-               'volume': item.get('search_volume', {}).get('value', 0),
-               'competition': item.get('competition', {}).get('value', 0),
-           }
-           resultatai.append(result)
-           # print(resultatai)
-   # Add resultatai to the context dictionary
-   context = {
-       'suggestions': suggestions,
-       'details': details,
-   }
-   context['resultatai'] = resultatai
-
-   return render(request, 'youtube.html', context)
+from django.http import StreamingHttpResponse
 
 
+import asyncio
+from django.shortcuts import render
+from django.http import StreamingHttpResponse
 
-
-
-def get_keyword_data(request):
-    suggestions = list(set(kintamasis))
-    # print(suggestions)
-    # suggestions = ['keyword']
+async def generate_results(suggestions):
     resultatai = []
-
     for term in suggestions:
         if ' ' in term:
             term = term.replace(" ", "+")
         url = f"https://api.vidiq.com/xwords/keyword_search/?term={term}&part=questions&limit=300"
         auth = {'authorization': 'Bearer UKP!e728d052-d362-4d96-b5c2-fe3d8c60e002!8dc5e271-13d7-419e-aaa6-7a0c3b25b3e7'}
-        response = requests.get(url, headers=auth)
+        response = await requests.get(url, headers=auth)
         data = json.loads(response.text)
         print(data)
         competition = round(data['normalized_input_term']['competition'])
         volume = round(data['normalized_input_term']['volume'])
         overall = round(data['normalized_input_term']['overall'])
         estimated_monthly_search = round(data['normalized_input_term']['estimated_monthly_search'])
+
+        # Replace "+" symbol with a space in the term
+        term = term.replace("+", " ")
+
         sarasas = {
-            'term':term,
+            'term': term,
             'competition': competition,
             'volume': volume,
             'overall': overall,
             'estimated_monthly_search': estimated_monthly_search,
         }
         resultatai.append(sarasas)
+        yield resultatai
 
-    context = {
-
-        'resultatai':resultatai,
-    }
-
+async def stream_results(request):
+    suggestions = ['keyword are good']
+    response = StreamingHttpResponse(streaming_content=generate_results(suggestions), content_type='application/json')
+    response['Cache-Control'] = 'no-cache'
+    return response
     return render(request, 'youtube.html', context=context)
+def get_keyword_data(request):
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(stream_results(request))
+
+
+
 
 
 

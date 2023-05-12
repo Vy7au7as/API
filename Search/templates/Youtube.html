@@ -33,37 +33,19 @@
     </div>
     {% if suggestions %}
     <h2>Suggestion keywords:</h2>
-<ul style="list-style-type: decimal; display: inline;">
+<ul style="list-style-type: decimal; ">
     {% for suggestion in suggestions %}
     <li>{{ suggestion }}</li>
     {% endfor %}
 </ul>
-
 {% endif %}
-
-<ul id="result-container" style="display: inline;">
+<h2>Details (Keyword, Estimated Monthly Search, Competition, Overall Score):</h2>
+<ul id="result-container" style="list-style-type: decimal;">
   {% for result in resultatai %}
-    <li>Term: {{ result.term }} - Estimated Monthly Search: {{ result.estimated_monthly_search }} - Score: {{ result.overall }} - Competition: {{ result.competition }}</li>
+    <li> {{ result.term }}, {{ result.estimated_monthly_search }},  {{ result.competition }}, {{ result.overall }}</li>
   {% endfor %}
 </ul>
 
-
-<!--  <ul id="result-container"></ul>-->
-
-<!--    {% for result in resultatai %}-->
-<!--      <li>-->
-<!--        <li>{{ suggestion }}</li>-->
-<!--        <h2>{{ result.term }}</h2>-->
-<!--        <p>Estimated Monthly Search: {{ result.estimated_monthly_search }}</p>-->
-<!--        <p>Score: {{ result.overall }}</p>-->
-<!--        <p>Difficulty: {{ result.difficulty }}</p>-->
-<!--        <p>Volume: {{ result.volume }}</p>-->
-<!--        <p>Competition: {{ result.competition }}</p>-->
-
-
-<!--      </li>-->
-<!--    {% endfor %}-->
-<!--  </ul>-->
 
 
 </body>
