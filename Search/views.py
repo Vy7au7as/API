@@ -71,7 +71,7 @@ def download_csv(request):
         writer.writerow([result])
 
     return response
-#VidIQ
+#Details
 def details(request):
     suggestions = list(set(kintamasis))
     # suggestions = ['keyword are good', 'keywod']
@@ -87,7 +87,6 @@ def details(request):
         data = json.loads(response.text)
         print(data)
         competition = round(data['normalized_input_term']['competition'])
-        volume = round(data['normalized_input_term']['volume'])
         overall = round(data['normalized_input_term']['overall'])
         estimated_monthly_search = round(data['normalized_input_term']['estimated_monthly_search'])
 
