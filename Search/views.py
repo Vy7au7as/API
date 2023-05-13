@@ -4,6 +4,7 @@ import json
 import csv
 from django.http import HttpResponse, JsonResponse
 
+
 kintamasis = []
 resultatai = []
 def search(request):
@@ -73,7 +74,7 @@ def download_csv(request):
 #VidIQ
 def details(request):
     suggestions = list(set(kintamasis))
-    # suggestions = ['keyword are good']
+    # suggestions = ['keyword are good', 'keywod']
     resultatai = []
 
     for term in suggestions:
@@ -96,7 +97,6 @@ def details(request):
         sarasas = {
             'term': term,
             'competition': competition,
-            'volume': volume,
             'overall': overall,
             'estimated_monthly_search': estimated_monthly_search,
             }
@@ -112,8 +112,7 @@ def details(request):
     return render(request, 'youtube.html', context=context)
 
 
-import csv
-from django.http import HttpResponse
+
 
 
 def download_csv(request):
@@ -127,16 +126,15 @@ def download_csv(request):
     # Write data to CSV file
     writer = csv.writer(response)
     writer.writerow(
-        ['Keyword', 'Estimated Monthly Search', 'Competition', 'Volume', 'Overall'])
+        ['Keyword', 'Estimated Monthly Search', 'Competition', 'Overall'])
     for result in resultatai:
         keyword = result['term']
         competition = result['competition']
-        volume = result['volume']
         overall = result['overall']
         estimated_monthly_search = result['estimated_monthly_search']
 
         writer.writerow(
-            [keyword, estimated_monthly_search, competition, volume, overall])
+            [keyword, estimated_monthly_search, competition, overall])
 
     return response
 

@@ -35,11 +35,11 @@
     <h2>Suggestion keywords:</h2>
 <ul style="list-style-type: decimal; ">
     {% for suggestion in suggestions %}
-    <li>{{ suggestion }}</li>
+    <li>{{ suggestion }} {{ result.estimated_monthly_search }}  {{ result.competition }} {{ result.overall }}</li>
     {% endfor %}
 </ul>
 {% endif %}
-<h2>Details (Keyword, Estimated Monthly Search, Competition, Overall Score):</h2>
+<h2>Keyword, Estimated Monthly Search, Competition, Overall Score:</h2>
 <ul id="result-container" style="list-style-type: decimal;">
   {% for result in resultatai %}
     <li> {{ result.term }}, {{ result.estimated_monthly_search }},  {{ result.competition }}, {{ result.overall }}</li>
