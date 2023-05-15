@@ -7,45 +7,64 @@
 <body>
 <div class="menu-bar">
     <h1>YouTube Search Suggestions:</h1></dr></div>
-    <div class="search-container">
+<div class="search-container">
     <form method="get" action="/">
         <input type="text" name="q" placeholder="Enter your search query" value="{{ query }}" class="search-bar" id="search-bar" placeholder>
         <button type="submit" class="search-button" id="search-button">Search</button>
-        </form>
-        <form method="get" action="/details">
+    </form>
+    <form method="get" action="/details">
         <button type="submit" class="show-button" style="color:white">Show Details</button>
-       </form>
-<!--        <form method="get" action="/get_keyword_data">-->
-<!--        <button type="submit" class="show-button" style="color:white">Show Data</button>-->
-<!--       </form>-->
-        <a style="margin-left:10px; color:black" href="{% url 'download_csv' %}" class="btn btn-primary">Download as CSV</a>
-{% if details %}
-<h2>Details:</h2>
+    </form>
 
-<ul style="list-style-type: decimal">
-    {% for detail in details %}
-    <li>{{ detail }}</li>
-    {% endfor %}
-</ul>
+    <a style="margin-left:10px; color:black" href="{% url 'download_csv' %}" class="btn btn-primary">Download as CSV</a>
+    {% if details %}
+    <h2>Details:</h2>
 
-{% endif %}
+    <ul style="list-style-type: decimal">
+        {% for detail in details %}
+        <li>{{ detail }}</li>
+        {% endfor %}
+    </ul>
 
-    </div>
+    {% endif %}
+
+</div>
+
+<table id="result-container" border="1">
     {% if suggestions %}
-    <h2>Suggestion keywords:</h2>
-<ul style="list-style-type: decimal; ">
-    {% for suggestion in suggestions %}
-    <li>{{ suggestion }} </li>
-    {% endfor %}
-</ul>
-{% endif %}
-<h2>Keyword, Estimated Monthly Search, Competition, Overall Score:</h2>
-<ul id="result-container" style="list-style-type: decimal;">
-  {% for result in resultatai %}
-    <li> {{ result.term }}, {{ result.estimated_monthly_search }},  {{ result.competition }}, {{ result.overall }}</li>
-  {% endfor %}
-</ul>
+    <tr>
+        <th>#</th>
+        <th>Keywords:</th>
+        <th>Search:</th>
+        <th>Competition:</th>
+        <th>Overall Score:</th>
+    </tr>
 
+    {% for suggestion in suggestions %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ suggestion }}</td>
+    </tr>
+    {% endfor %}
+
+    {% endif %}
+<tr>
+        <th>#</th>
+        <th>Keywords:</th>
+        <th>Search:</th>
+        <th>Competition:</th>
+        <th>Overall Score:</th>
+    </tr>
+    {% for result in resultatai %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ result.term }}</td>
+        <td>{{ result.estimated_monthly_search }}</td>
+        <td>{{ result.competition }}</td>
+        <td>{{ result.overall }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 
 </body>

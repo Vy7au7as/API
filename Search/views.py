@@ -76,38 +76,45 @@ def details(request):
     suggestions = list(set(kintamasis))
     # suggestions = ['keyword are good', 'keywod']
     resultatai = []
-
+    # Iterate over each term in the suggestions list
     for term in suggestions:
+        # Replace spaces with '+' in the term if necessary
         if ' ' in term:
             term = term.replace(" ", "+")
+        # Construct the API URL with the modified term
         url = f"https://api.vidiq.com/xwords/keyword_search/?term={term}&part=questions&limit=300"
+        # Add authorization headers to the request
         auth = {
             'authorization': 'Bearer UKP!e728d052-d362-4d96-b5c2-fe3d8c60e002!8dc5e271-13d7-419e-aaa6-7a0c3b25b3e7'}
+        # Send a GET request to the API URL
         response = requests.get(url, headers=auth)
+        # Parse the response content as JSON
         data = json.loads(response.text)
         print(data)
+        # Extract the competition, overall, and estimated monthly search values from the data
         competition = round(data['normalized_input_term']['competition'])
         overall = round(data['normalized_input_term']['overall'])
         estimated_monthly_search = round(data['normalized_input_term']['estimated_monthly_search'])
 
         # Replace "+" symbol with a space in the term
         term = term.replace("+", " ")
-
+        # Create a dictionary 'sarasas' with the term and its associated metrics
         sarasas = {
             'term': term,
             'competition': competition,
             'overall': overall,
             'estimated_monthly_search': estimated_monthly_search,
             }
+        # Append the 'sarasas' dictionary to the 'resultatai' list
         resultatai.append(sarasas)
-
+    # Create a context dictionary with the 'resultatai' list
     context = {
         'resultatai': resultatai,
     }
 
     # Store the resultatai list in the session
     request.session['resultatai'] = resultatai
-
+    # Render the 'youtube.html' template with the context data
     return render(request, 'youtube.html', context=context)
 
 
@@ -136,6 +143,10 @@ def download_csv(request):
             [keyword, estimated_monthly_search, competition, overall])
 
     return response
+
+
+
+
 
 
 
