@@ -56,21 +56,7 @@ def search(request):
     return render(request, 'youtube.html', {'query': query, 'suggestions': suggestions})
 
 
-#Download_CSV
-def download_csv(request):
-    #print(kintamasis)
-    results = kintamasis
-    # Set up response as CSV file
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Suggestions.csv"'
 
-    # Write data to CSV file
-    writer = csv.writer(response)
-    writer.writerow(['Keyword','Volume','Competition','Overall'])
-    for result in results:
-        writer.writerow([result])
-
-    return response
 #Details
 def details(request):
     suggestions = list(set(kintamasis))
@@ -116,10 +102,6 @@ def details(request):
     request.session['resultatai'] = resultatai
     # Render the 'youtube.html' template with the context data
     return render(request, 'youtube.html', context=context)
-
-
-
-
 
 def download_csv(request):
     # Retrieve the resultatai list from the session
