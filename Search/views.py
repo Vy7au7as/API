@@ -53,7 +53,7 @@ def search(request):
     global kintamasis
     kintamasis = list(set(suggestions))
     # print(kintamasis)
-    return render(request, 'youtube.html', {'query': query, 'suggestions': suggestions})
+    return render(request, 'index.html', {'query': query, 'suggestions': suggestions})
 
 
 
@@ -101,7 +101,7 @@ def details(request):
     # Store the resultatai list in the session
     request.session['resultatai'] = resultatai
     # Render the 'youtube.html' template with the context data
-    return render(request, 'youtube.html', context=context)
+    return render(request, 'index.html', context=context)
 
 def download_csv(request):
     # Retrieve the resultatai list from the session
