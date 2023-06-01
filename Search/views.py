@@ -100,7 +100,7 @@ def details(request):
 
     # Store the resultatai list in the session
     request.session['resultatai'] = resultatai
-    # Render the 'youtube.html' template with the context data
+    # Render the 'index.html' template with the context data
     return render(request, 'index.html', context=context)
 
 def download_csv(request):
