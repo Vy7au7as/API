@@ -1,0 +1,32 @@
+t6y1x9n6h7j1
+
+150.136.112.86
+
+ubuntu
+
+sudo nano /etc/apache2/sites-enabled/django_app.conf
+<VirtualHost *:80>
+    ServerName 150.136.112.86
+
+    ErrorLog ${APACHE_LOG_DIR}/django-err.log
+    CustomLog ${APACHE_LOG_DIR}/django-acc.log combined
+
+    WSGIDaemonProcess API processes=1 threads=15 python-home=/var/www/venv python-path=/var/www
+    WSGIProcessGroup API
+    WSGIScriptAlias / /var/www/API/wsgi.py
+
+    Alias /static /var/www/static
+
+    <Directory /var/www/API>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+    <Directory /var/www/static>
+        Require all granted
+    </Directory>
+
+    WSGIApplicationGroup %{GLOBAL}
+</VirtualHost>
+
